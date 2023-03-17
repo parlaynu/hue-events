@@ -2,8 +2,7 @@
 pyenv/
 
 # keep config templates but ignore the rest
-**/configs/*
-!**/configs/*tpl
+**/configs/*yaml
 
 # for local work
 local/
