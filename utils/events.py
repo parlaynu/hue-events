@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import argparse
+import time
 import json
-from pprint import pprint
 import hlib
 
 
@@ -31,22 +31,17 @@ def get_devices(cl):
     return devices
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("config_file", help="configuration file to load", type=str)
-    parser.add_argument("types", help="event types to filter for", type=str, nargs='*', default=None)
-    args = parser.parse_args()
-    
+def run(config_file, types):
     bridge = hlib.find_bridge()
     if bridge is None:
         print("Could not locate a bridge")
         return
 
     types = set()
-    for t in args.types:
+    for t in types:
         types.add(t)
 
-    cfg = hlib.load_config(args.config_file)
+    cfg = hlib.load_config(config_file)
     cl = hlib.new_client(bridge.address, cfg['user_name'])
     
     # get the devices
@@ -92,12 +87,24 @@ def main():
                 
                 jdata = json.dumps(data)
                 print(jdata, flush=True)
-                # print("-----------------------")
-                # pprint(data)
-                # print("", flush=True)
                 
+    
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("config_file", help="configuration file to load", type=str)
+    parser.add_argument("types", help="event types to filter for", type=str, nargs='*', default=None)
+    args = parser.parse_args()
+    
+    while True:
+        try:
+            run(args.config_file, args.types)
+        except KeyboardInterrupt:
+            break
+        except:
+            time.sleep(60)
+            pass
+    
 
-        # data = data['data']
 
 if __name__ == "__main__":
     main()
