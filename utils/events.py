@@ -32,14 +32,13 @@ def get_devices(cl):
 
 
 def run(config_file, types):
+    
+    types = set(types)
+
     bridge = hlib.find_bridge()
     if bridge is None:
         print("Could not locate a bridge")
         return
-
-    types = set()
-    for t in types:
-        types.add(t)
 
     cfg = hlib.load_config(config_file)
     cl = hlib.new_client(bridge.address, cfg['user_name'])
