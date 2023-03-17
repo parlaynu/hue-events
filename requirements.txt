@@ -1,0 +1,4 @@
+pyyaml
+requests
+zeroconf
+influxdb-client

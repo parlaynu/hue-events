@@ -1,0 +1,13 @@
+# ignore python virtual env
+pyenv/
+
+# keep config templates but ignore the rest
+**/configs/*
+!**/configs/*tpl
+
+# for local work
+local/
+
+# system files
+.DS_Store
+
