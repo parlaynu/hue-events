@@ -52,7 +52,7 @@ def run(config_file, types):
     }
     
     prefix = "data: "
-    resp = cl.get("/eventstream/clip/v2", extra_headers=headers, stream=True)
+    resp = cl.get("/eventstream/clip/v2", extra_headers=headers, stream=True, timeout=60)
     for line in resp.iter_lines():
         line = line.decode('utf-8')
         if len(line) == 0:
@@ -100,12 +100,11 @@ def main():
         except KeyboardInterrupt:
             break
         except:
+            print('{"ping": "ping"}', flush=True)
             time.sleep(60)
             pass
-    
 
 
 if __name__ == "__main__":
     main()
-
 
