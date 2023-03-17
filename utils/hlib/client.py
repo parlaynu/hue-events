@@ -25,9 +25,9 @@ class Client:
             self._session.verify = False
             self.get("/api")
                 
-    def get(self, url, *, extra_headers=None, stream=False):
+    def get(self, url, *, extra_headers=None, stream=False, timeout=None):
         full_url = f"https://{self._bridge}{url}"
-        return self._session.get(full_url, headers=extra_headers, stream=stream)
+        return self._session.get(full_url, headers=extra_headers, stream=stream, timeout=timeout)
     
     def post(self, url, *, json=None, extra_headers=None):
         full_url = f"https://{self._bridge}{url}"
