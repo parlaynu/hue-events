@@ -44,11 +44,12 @@ def logger(inp):
 
         elif motion := item.get("motion", None):
             if motion['motion_valid']:
+                value = 1 if motion['motion'] else 0
                 record = influxdb_client.Point("motion")          \
                                     .tag("device", item['id'])  \
                                     .tag("product", item['owner']['product']) \
                                     .tag("name", item['owner']['name'])       \
-                                    .field("motion", motion['motion'])
+                                    .field("motion", value)
             
                 writer.write(bucket=bucket, org=org, record=record)
 
