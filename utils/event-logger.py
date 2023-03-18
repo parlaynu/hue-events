@@ -22,6 +22,7 @@ def reader():
 def fromjson(inp):
     for item in inp:
         jdata = json.loads(item)
+        jdata['source'] = "live"
         yield jdata
 
 
@@ -42,6 +43,7 @@ def cacher(inp):
             citem = v[1]   # the cached item
             if now - stamp > 30:  # if more than 5 minutes has elapsed, yield it again
                 cache[k] = (now, citem)
+                citem['source'] = "cache"
                 yield citem
 
 
@@ -100,7 +102,15 @@ def main():
     pipe = logger(pipe)
     
     for item in pipe:
-        pprint(item)
+        if light := item.get("light", None):
+            print(f"{item['source']:>5}: valid: {light['light_level_valid']}, light_level: {light['light_level']},", \
+                        f"device: {item['id']}, name: {item['owner']['name']}")
+        elif motion := item.get("motion", None):
+            print(f"{item['source']:>5}: valid: {motion['motion_valid']}, motion: {motion['motion']},", \
+                        f"device: {item['id']}, name: {item['owner']['name']}")
+        elif temp := item.get("temperature", None):
+            print(f"{item['source']:>5}: valid: {temp['temperature_valid']}, temperature: {temp['temperature']},", \
+                        f"device: {item['id']}, name: {item['owner']['name']}")
 
 
 if __name__ == "__main__":
