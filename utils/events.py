@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
+import sys
 import argparse
 import time
 import json
+import requests
+
 import hlib
 
 
@@ -52,7 +55,7 @@ def run(config_file, types):
     }
     
     prefix = "data: "
-    resp = cl.get("/eventstream/clip/v2", extra_headers=headers, stream=True, timeout=60)
+    resp = cl.get("/eventstream/clip/v2", extra_headers=headers, stream=True, timeout=300)
     for line in resp.iter_lines():
         line = line.decode('utf-8')
         if len(line) == 0:
@@ -97,12 +100,14 @@ def main():
     while True:
         try:
             run(args.config_file, args.types)
+        except requests.ConnectionError:
+            continue
         except KeyboardInterrupt:
             break
-        except:
-            print('{"ping": "ping"}', flush=True)
-            time.sleep(60)
-            pass
+        except Exception as e:
+            print(type(e), file=sys.stderr)
+            print(e, file=sys.stderr)
+            break
 
 
 if __name__ == "__main__":
