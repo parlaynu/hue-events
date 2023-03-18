@@ -41,7 +41,6 @@ def cacher(inp):
             stamp = v[0]   # timestamp with this item was added to the cache
             citem = v[1]   # the cached item
             if now - stamp > 30:  # if more than 5 minutes has elapsed, yield it again
-                print("yielding from cache")
                 cache[k] = (now, citem)
                 yield citem
 
