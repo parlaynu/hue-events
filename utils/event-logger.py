@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import sys, os
+import select
+import time
 import json
 from pprint import pprint
 
@@ -8,14 +10,40 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 
 
 def reader():
-    for idx, item in enumerate(sys.stdin):
-        yield item.strip()
+    while True:
+        rready, _, _ = select.select([sys.stdin,], [], [], 360.0)
+        if rready:
+            item = sys.stdin.readline()
+            yield item.strip()
+        else:
+            yield '{"ping": "pong"}'
 
 
 def fromjson(inp):
     for item in inp:
         jdata = json.loads(item)
         yield jdata
+
+
+def cacher(inp):
+    cache = {}
+    
+    for item in inp:
+        now = time.time()
+
+        # if it's a valid item, cache it and yield it
+        if iid := item.get('id', None):
+            cache[iid] = (now, item)
+            yield item
+
+        # check the cache for older items
+        for k, v in cache.items():
+            stamp = v[0]   # timestamp with this item was added to the cache
+            citem = v[1]   # the cached item
+            if now - stamp > 30:  # if more than 5 minutes has elapsed, yield it again
+                print("yielding from cache")
+                cache[k] = (now, citem)
+                yield citem
 
 
 def logger(inp):
@@ -69,6 +97,7 @@ def logger(inp):
 def main():
     pipe = reader()
     pipe = fromjson(pipe)
+    pipe = cacher(pipe)
     pipe = logger(pipe)
     
     for item in pipe:
@@ -76,5 +105,10 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        pass
+
+
 
