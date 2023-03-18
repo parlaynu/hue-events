@@ -3,6 +3,7 @@ import sys, os
 import select
 import time
 import json
+from datetime import datetime
 from pprint import pprint
 
 import influxdb_client
@@ -41,7 +42,7 @@ def cacher(inp):
         for k, v in cache.items():
             stamp = v[0]   # timestamp with this item was added to the cache
             citem = v[1]   # the cached item
-            if now - stamp > 30:  # if more than 5 minutes has elapsed, yield it again
+            if now - stamp > 300:  # if more than 5 minutes has elapsed, yield it again
                 cache[k] = (now, citem)
                 citem['source'] = "cache"
                 yield citem
@@ -102,15 +103,18 @@ def main():
     pipe = logger(pipe)
     
     for item in pipe:
+        
+        stamp = datetime.now().strftime("%Y-%m-%d,%H:%M:%S")
+        print(f"{stamp},{item['owner']['name']},{item['source']},", end="")
+        
         if light := item.get("light", None):
-            print(f"{item['source']:>5}: valid: {light['light_level_valid']}, light_level: {light['light_level']},", \
-                        f"device: {item['id']}, name: {item['owner']['name']}")
+            print(f"light level,{light['light_level_valid']},{light['light_level']}")
         elif motion := item.get("motion", None):
-            print(f"{item['source']:>5}: valid: {motion['motion_valid']}, motion: {motion['motion']},", \
-                        f"device: {item['id']}, name: {item['owner']['name']}")
+            print(f"motion,{motion['motion_valid']},{motion['motion']}")
         elif temp := item.get("temperature", None):
-            print(f"{item['source']:>5}: valid: {temp['temperature_valid']}, temperature: {temp['temperature']},", \
-                        f"device: {item['id']}, name: {item['owner']['name']}")
+            print(f"temperature,{temp['temperature_valid']},{temp['temperature']}")
+        else:
+            print("")
 
 
 if __name__ == "__main__":
