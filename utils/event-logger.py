@@ -22,9 +22,12 @@ def reader():
 
 def fromjson(inp):
     for item in inp:
-        jdata = json.loads(item)
-        jdata['source'] = "live"
-        yield jdata
+        try:
+            jdata = json.loads(item)
+            jdata['source'] = "live"
+            yield jdata
+        except:
+            pass
 
 
 def cacher(inp):

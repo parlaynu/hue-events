@@ -32,6 +32,9 @@ class Client:
     def post(self, url, *, json=None, extra_headers=None):
         full_url = f"https://{self._bridge}{url}"
         return self._session.post(full_url, json=json)
+    
+    def close(self):
+        self._session.close()
 
 
 def new_client(bridge, user_name=None):

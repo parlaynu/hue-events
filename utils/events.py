@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 import sys
 import argparse
-import time
 import json
+import time
+from datetime import datetime
+
 import requests
 
 import hlib
@@ -34,20 +36,12 @@ def get_devices(cl):
     return devices
 
 
-def run(config_file, types):
+def run(client, types):
     
     types = set(types)
 
-    bridge = hlib.find_bridge()
-    if bridge is None:
-        print("Could not locate a bridge")
-        return
-
-    cfg = hlib.load_config(config_file)
-    cl = hlib.new_client(bridge.address, cfg['user_name'])
-    
     # get the devices
-    devices = get_devices(cl)
+    devices = get_devices(client)
     
     # start listening for events
     headers = {
@@ -55,7 +49,7 @@ def run(config_file, types):
     }
     
     prefix = "data: "
-    resp = cl.get("/eventstream/clip/v2", extra_headers=headers, stream=True, timeout=300)
+    resp = client.get("/eventstream/clip/v2", extra_headers=headers, stream=True, timeout=300)
     for line in resp.iter_lines():
         line = line.decode('utf-8')
         if len(line) == 0:
@@ -70,8 +64,12 @@ def run(config_file, types):
         for event in events:
             datas = event['data']
             for data in datas:
+                owner = data.get("owner", None)
+                if owner is None:
+                    continue
+                
                 # only report events related to devices
-                if data['owner']['rtype'] != 'device':
+                if owner['rtype'] != 'device':
                     continue
 
                 # filter types
@@ -83,7 +81,7 @@ def run(config_file, types):
                 data['event_id'] = event['id']
                 data['event_type'] = event['type']
                 
-                owner_id = data['owner']['rid']
+                owner_id = owner['rid']
                 if owner := devices.get(owner_id, None):
                     data['owner'] = owner
                 
@@ -97,9 +95,21 @@ def main():
     parser.add_argument("types", help="event types to filter for", type=str, nargs='*', default=None)
     args = parser.parse_args()
     
+    cfg = hlib.load_config(args.config_file)
+
+    bridge = hlib.find_bridge()
+    if bridge is None:
+        print("Could not locate a bridge")
+        return
+
     while True:
         try:
-            run(args.config_file, args.types)
+            stamp = datetime.now().strftime("%Y-%m-%d,%H:%M:%S")
+            print(f"{stamp},connecting", file=sys.stderr)
+            
+            client = hlib.new_client(bridge.address, cfg['user_name'])
+            run(client, args.types)
+            
         except requests.ConnectionError:
             continue
         except KeyboardInterrupt:
@@ -108,6 +118,8 @@ def main():
             print(type(e), file=sys.stderr)
             print(e, file=sys.stderr)
             break
+        finally:
+            client.close()
 
 
 if __name__ == "__main__":
