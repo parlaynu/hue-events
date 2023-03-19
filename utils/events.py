@@ -102,7 +102,8 @@ def main():
         print("Could not locate a bridge")
         return
 
-    while True:
+    running = True
+    while running:
         try:
             stamp = datetime.now().strftime("%Y-%m-%d,%H:%M:%S")
             print(f"{stamp},connecting", file=sys.stderr)
@@ -111,14 +112,18 @@ def main():
             run(client, args.types)
             
         except requests.ConnectionError:
-            continue
+            stamp = datetime.now().strftime("%Y-%m-%d,%H:%M:%S")
+            print(f"{stamp},resting", file=sys.stderr)
+            time.sleep(60)
         except KeyboardInterrupt:
-            break
+            running = False
         except Exception as e:
+            running = False
             print(type(e), file=sys.stderr)
             print(e, file=sys.stderr)
-            break
         finally:
+            stamp = datetime.now().strftime("%Y-%m-%d,%H:%M:%S")
+            print(f"{stamp},closing", file=sys.stderr)
             client.close()
 
 
