@@ -111,13 +111,13 @@ def main():
         print(f"{stamp},{item['owner']['name']},{item['source']},", end="")
         
         if light := item.get("light", None):
-            print(f"light level,{light['light_level_valid']},{light['light_level']}")
+            print(f"light level,{light['light_level_valid']},{light['light_level']}", flush=True)
         elif motion := item.get("motion", None):
-            print(f"motion,{motion['motion_valid']},{motion['motion']}")
+            print(f"motion,{motion['motion_valid']},{motion['motion']}", flush=True)
         elif temp := item.get("temperature", None):
-            print(f"temperature,{temp['temperature_valid']},{temp['temperature']}")
+            print(f"temperature,{temp['temperature_valid']},{temp['temperature']}", flush=True)
         else:
-            print("")
+            print("", flush=True)
 
 
 if __name__ == "__main__":
