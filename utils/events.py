@@ -111,8 +111,10 @@ def main():
             client = hlib.new_client(bridge.address, cfg['user_name'])
             run(client, args.types)
             
-        except requests.ConnectionError:
+        except (requests.ConnectionError, requests.exceptions.ChunkedEncodingError):
             stamp = datetime.now().strftime("%Y-%m-%d,%H:%M:%S")
+            print(f"{stamp},closing", file=sys.stderr)
+            client.close()
             print(f"{stamp},resting", file=sys.stderr)
             time.sleep(60)
         except KeyboardInterrupt:
@@ -121,10 +123,6 @@ def main():
             running = False
             print(type(e), file=sys.stderr)
             print(e, file=sys.stderr)
-        finally:
-            stamp = datetime.now().strftime("%Y-%m-%d,%H:%M:%S")
-            print(f"{stamp},closing", file=sys.stderr)
-            client.close()
 
 
 if __name__ == "__main__":
