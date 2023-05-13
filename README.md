@@ -65,8 +65,8 @@ To run the event capture with logging, run a command like this:
 You'll start seeing events arriving in InfluxDB.
 
 The logger currently only logs 'temperature', 'light_level' and 'motion' events. There's no reason why
-other events can't be logged, I was just interested in these ones so didn't bother adding others or
-generalizing things to handle any event type. On the todo list.
+other events can't be logged, I was just interested in these ones so didn't bother adding support for 
+other event types or even better, generalizing the code to handle any event type. On the todo list.
 
 
 ## Helper Utilities
