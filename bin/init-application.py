@@ -58,7 +58,7 @@ def main():
     # get the bridge address
     bridge = hlib.find_bridge()
     if bridge is None:
-        print("Could not locate a bridge")
+        print("Error: failed to locate a bridge")
         return
     
     print(f"Found bridge {bridge.id} at address {bridge.addresses[0]}")
@@ -76,5 +76,3 @@ def main():
 if __name__ == "__main__":
     main()
 
-
-# Service Philips Hue - AC9552._hue._tcp.local. added, service info: ServiceInfo(type='_hue._tcp.local.', name='Philips Hue - AC9552._hue._tcp.local.', addresses=[b'\xc0\xa8\x18\xb2'], port=443, weight=0, priority=0, server='001788ac9552.local.', properties={b'bridgeid': b'001788fffeac9552', b'modelid': b'BSB002'}, interface_index=None)

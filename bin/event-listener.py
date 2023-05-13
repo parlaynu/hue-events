@@ -99,7 +99,7 @@ def main():
 
     bridge = hlib.find_bridge()
     if bridge is None:
-        print("Could not locate a bridge")
+        print("Error: failed to locate a bridge")
         return
 
     running = True

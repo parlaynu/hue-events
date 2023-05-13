@@ -5,7 +5,7 @@ from hlib import find_bridge
 def main():
     bridge = find_bridge()
     if bridge is None:
-        print("No bridge found")
+        print("Error: failed to locate a bridge")
         return
 
     print("Bridge:")
