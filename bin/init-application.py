@@ -64,7 +64,7 @@ def main():
     print(f"Found bridge {bridge.id} at address {bridge.addresses[0]}")
     
     # create the application
-    user_name, client_key, msg = create_app(bridge.addresses[0], args.app_name, args.app_instance)
+    user_name, client_key, msg = create_app(bridge, args.app_name, args.app_instance)
     if user_name is None:
         print(f"Failed to create app: {msg}")
         return

@@ -108,7 +108,7 @@ def main():
             stamp = datetime.now().strftime("%Y-%m-%d,%H:%M:%S")
             print(f"{stamp},connecting", file=sys.stderr)
             
-            client = hlib.new_client(bridge.address, cfg['user_name'])
+            client = hlib.new_client(bridge, cfg['user_name'])
             run(client, args.types)
             
         except (requests.ConnectionError, requests.exceptions.ChunkedEncodingError):

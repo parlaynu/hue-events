@@ -26,7 +26,7 @@ class Client:
             self.get("/api")
                 
     def get(self, url, *, extra_headers=None, stream=False, timeout=None):
-        full_url = f"https://{self._bridge}{url}"
+        full_url = f"https://{self._bridge.address}:{self._bridge.port}{url}"
         return self._session.get(full_url, headers=extra_headers, stream=stream, timeout=timeout)
     
     def post(self, url, *, json=None, extra_headers=None):

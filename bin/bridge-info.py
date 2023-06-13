@@ -16,6 +16,7 @@ def main():
     for address in bridge.addresses:
         print(f" {address}", end="")
     print("")
+    print(f"     Port: {bridge.port}")
 
 
 if __name__ == "__main__":

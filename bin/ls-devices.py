@@ -16,7 +16,7 @@ def main():
         return
     
     cfg = hlib.load_config(args.config_file)
-    cl = hlib.new_client(bridge.address, cfg['user_name'])
+    cl = hlib.new_client(bridge, cfg['user_name'])
     
     resp = cl.get("/clip/v2/resource/device")
     if resp.status_code != 200:
