@@ -1,5 +1,6 @@
-# ignore python virtual env
+# python
 pyenv/
+__pycache__/
 
 # keep config templates but ignore the rest
 **/configs/*yaml
